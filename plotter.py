@@ -1,10 +1,10 @@
 
 import time
-import scicomap as scm  # Import the scicomap package
+# import scicomap as scm  # Import the scicomap package
 from colormaps import parula
 
 from matplotlib import colors
-import viscm
+# import viscm
 # This file is used to plot the figures needed in the paper.
 
 import matplotlib.pyplot as plt
@@ -394,12 +394,12 @@ def T_versus_wl():
     simple_model = Simple_NN(num_features=2)
     partial_model = PartialNN()
     partial_model.load_state_dict(
-        torch.load('models/PartialNN/log_xmax_model_fine1/epoch_300.pth'))
-    simple_model.load_state_dict(torch.load('forward_models/model_Resnet_unif/iso/WithBound_log_model/epoch_380.pth'))
+        torch.load('models/partial_inverse.pth'))
+    simple_model.load_state_dict(torch.load('forward_models/model_Resnet_unif_5/iso/WithBound_log_model/epoch_380.pth'))
     aero = Aerogel_Sample(thickness_mm=5.26, density=293, optical_mean_r_nm=3.50, wavelength_nm=10, m0=1 - 2j)
     wavelst_nm = np.linspace(200, 1000, 100)
     rte = RTE(1, 1, 0.9, 5.26, 21, 21, 'hg', 0.0)
-    datas = np.load('plot_data/real_pred.npy')
+    # datas = np.load('plot_data/real_pred.npy')
     datas = np.hstack([datas[:, :20], datas[:, 20::3]])
     wavelst_nm = datas[0]
     T_total_rte = datas[1]
@@ -435,7 +435,7 @@ def T_versus_wl():
     plt.plot(wavelst_nm, T_diffuse_rte, '--', label='$T_{diffuse}$ RTE', lw=lw, color='#ffad66')  # Orange line
     plt.plot(wavelst_nm, T_diffuse_ml, 'o', label='$T_{diffuse}$ ML', ms=ms, color='#ff7f0e',
              markerfacecolor='none', markeredgecolor='#ff7f0e')  # Hollow orange pointsLighter orange points
-    # np.save('plot_data/real_pred.npy', datas)
+    np.save('plot_data/real_pred.npy', datas)
 
     plt.legend(loc='right')
     plt.xlabel('Wavelength (nm)')
@@ -999,11 +999,11 @@ if __name__ == '__main__':
     # plt.show()
     # store_RTE_T_R_versus_xmax()
     # T_R_versus_xmax(use_log_model=True)
-    # T_versus_wl()
+    T_versus_wl()
     # real_spectrum_fitting()
     # show_forward_eff_2()
     # inverse_efficiency()
-    betat_omega_heatmap(200, keep_log=False)
+    # betat_omega_heatmap(200, keep_log=False)
     # betat_heatmap_rte(20)
     # xmax_versus_T()
     # T_R_Heatmap('hg')

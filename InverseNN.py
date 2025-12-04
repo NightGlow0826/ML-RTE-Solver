@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from matplotlib import pyplot as plt
 
-from temp import Loss_Tracker
+# from temp import Loss_Tracker
 from RTE_Truth_Model import RTE
 from torch import nn as nn
 from torch.utils.data import Dataset, DataLoader, random_split

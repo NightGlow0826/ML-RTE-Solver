@@ -6,7 +6,7 @@ import numpy as np
 # import cupy as np
 from tqdm import *
 
-import numba
+# import numba
 from joblib import Parallel, delayed
 
 
@@ -109,7 +109,7 @@ def gen_extra(num=300, phase='iso'):
     T_R_pair = np.zeros((len(depth_space)*len(omega_space), 2))
 
     def process_inner_loop(j, omega, xmax, rte_obj):
-        local_rte_obj = RTE(1, 1, 0.99, 5., 21, 21 phase, 0.5)
+        local_rte_obj = RTE(1, 1, 0.99, 5., 21, 21, phase, 0.5)
         local_rte_obj.xmax = xmax
         local_rte_obj.omega = omega
         local_rte_obj.build()
@@ -152,7 +152,7 @@ def gen_fine_pair_2(num=300, phase='iso'):
 
     # Parallel Code
     def process_inner_loop(j, omega, xmax):
-        local_rte_obj = RTE(1, 1, 0.9, 5., 21, 21, phase, 0.5)
+        local_rte_obj = RTE(1, 1, 0.99, 5., 21, 21, phase, 0.5)
         local_rte_obj.xmax = xmax
         local_rte_obj.omega = omega
         local_rte_obj.build()
@@ -185,7 +185,7 @@ def process_first_half(i, phase_type='iso'):
     omega = np.random.uniform(0, 1 - 1e-2)
     opt_pair_item = [xmax, omega]
 
-   
+    rte = RTE(omega, 1, 0.99, xmax, 21, 21, phase_type=phase_type, g=0.5)
 
     rte.build()
     T, R = rte.hemi_props()
@@ -254,11 +254,11 @@ if __name__ == '__main__':
     # phase_types = ['iso', 'ray', 'hg']
     # gen_extra(num=300, phase='ray')
 
-    # gen_fine_pair_2(num=1000, phase='hg')
-    # a = np.load('data/forward_fine_data/iso_1000_unif.npz')
+    gen_fine_pair_2(num:=1000, phase='iso')
+    # a = np.load(f'data/forward_fine_data/iso_{num}_unif.npz')
     # X = a['opt']
     # iso = a['iso']
-    # np.savez('data/forward_fine_data/iso_1000_unif.npz', X=X, iso=iso)
+    # np.savez(f'data/forward_fine_data/iso_{num}_unif.npz', X=X, iso=iso)
 
     # f = np.load('data/forward_fine_data/iso_300_extra.npz')
     # X = f['opt']
@@ -269,7 +269,7 @@ if __name__ == '__main__':
     # hg = f['spe']
     # np.savez('data/forward_fine_data/set_finer_extra.npz', iso=isotropic, ray=rayleigh, hg=hg, X=X)
 
-    gen_uniform(10000, phase='hg')
+    # gen_uniform(10000, phase='iso')
 
 
 

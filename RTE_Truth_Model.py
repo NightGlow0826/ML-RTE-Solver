@@ -1,4 +1,7 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 from dataclasses import dataclass
+from random import random
 import timeit
 import scipy.linalg as spla
 import scipy.sparse as sp
@@ -12,7 +15,7 @@ from scipy.optimize import minimize
 from torch.optim.lr_scheduler import StepLR, ReduceLROnPlateau
 from functools import lru_cache
 from typing import Literal
-from NN import Simple_NN
+# from NN import Simple_NN
 import torch
 from tqdm import tqdm
 
@@ -35,22 +38,23 @@ class RTE:
         self.grid_size: int = grid_size
         self.nquad: int = nquad
 
-        self.nodes, self.weights = scipy.special.roots_legendre(self.nquad)
         self.phase_type = phase_type
         assert phase_type in ['iso', 'ray', 'hg', 'legendre']
         self.g = g
 
     def build(self):
         # since  figured out the suitable grid size in "truncation.py", we overide the grid size here, just ignore the initialization of the class, params will be overriden here.
+        self.nquad = 21
         if self.omega <= 0.2:
-            self.nquad = 21
             self.grid_size = 51
+        elif 0.2 < self.omega <= 0.8:
+            self.grid_size = 37
         else:
-            self.nquad = 21
             self.grid_size = 21
         self.grid = np.linspace(0, self.xmax, self.grid_size)
         self.dx = self.xmax / (self.grid_size - 1)
         self.dx_inv = 1 / self.dx
+        self.nodes, self.weights = scipy.special.roots_legendre(self.nquad)
 
 
     def get_finite_diff_central(self, grid=None):
@@ -562,13 +566,17 @@ def draw_Ts():
 
 
 if __name__ == '__main__':
-    # i, n, w = rte_solver(np.linspace(0, 1, 3), 5, 2, 0.9, 1)
-    # plt.imshow(i)
-    # plt.show()
-    # hemi_props(1, 1, 3, 5, 0.9)
-    rte_obj = RTE(0.5, 1, 0.9, 1, 21, 21, 'iso', 0.0)
-
-    
+    import time
+    import random
+    t1 = time.time()
+    for _ in range(int(1e2)):
+        rte_obj = RTE(0.5, 1, 0.99, 10, 21, 21, phase_type='iso')
+        rte_obj.xmax = random.uniform(1, 1000)
+        rte_obj.omega = random.uniform(0, .1)
+        rte_obj.build()
+        T, R = rte_obj.hemi_props()
+    t2 = time.time()
+    print(f"Elapsed time: {t2 - t1} seconds")
 
     
 

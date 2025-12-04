@@ -12,7 +12,7 @@ import time
 from RTE_Truth_Model import RTE
 import matplotlib.pyplot as plt
 import numpy as np
-import swats
+# import swats
 import torch
 from tqdm import *
 from torch.utils.data import DataLoader, Dataset, random_split
@@ -290,14 +290,16 @@ def train_tb(model: nn.Module, train_loader, optimizer, epochs, test_loader, sav
             loss_bound = torch.nan_to_num(loss_bound, nan=0.)
 
             # Part 1 mainly correcting err for insufficient discretization
-            PINN_mask = X[:, 1] < 0.2  # w<0.1
-            xmax_part = X[:, 0][PINN_mask]
+            # PINN_mask = X[:, 1] < 0.2  
+            # # < 0.2 and >
+            # xmax_part = X[:, 0][PINN_mask]
+            xmax_part = X[:, 0]
             if use_log_model:
                 xmax_orig = torch.exp(xmax_part)
             else:
                 xmax_orig = xmax_part
             T_part_analytic = torch.exp(-xmax_orig)
-            T_part_pred = Y_pred[:, 0][PINN_mask]
+            T_part_pred = Y_pred[:, 0]
             # loss is where T_part_pred is less than T_part_analytic, analytical is the lower bound
             err = torch.clamp(T_part_pred - T_part_analytic, max=0.)
             loss_PINN = loss_fn(err, torch.zeros_like(err))
@@ -314,12 +316,12 @@ def train_tb(model: nn.Module, train_loader, optimizer, epochs, test_loader, sav
 
 
             epoch_total_samples += len(Y)
-            epoch_PINN1_samples += len(Y[PINN_mask])
+            epoch_PINN1_samples += len(Y)
             epoch_PINN2_samples += len(Y[PINN_mask2])
 
             epoch_total_loss += loss_sample.item() * len(Y)
             epoch_total_bound_loss += loss_bound.item() * len(Y)
-            epoch_total_PINN_loss += loss_PINN.item() * len(Y[PINN_mask])
+            epoch_total_PINN_loss += loss_PINN.item() * len(Y)
             epoch_total_PINN2_loss += loss_PINN_2.item() * len(Y[PINN_mask2])
 
 
@@ -328,7 +330,7 @@ def train_tb(model: nn.Module, train_loader, optimizer, epochs, test_loader, sav
             if loss_mode == 0:
                 loss = loss_sample
             elif loss_mode == 1:
-                loss = loss_sample + 0.5 * loss_bound
+                loss = loss_sample + 10 * loss_bound
             elif loss_mode == 2:
                 loss = loss_sample + 0.5 * loss_bound + 0.5 * loss_PINN
             elif loss_mode == 3:
@@ -340,6 +342,8 @@ def train_tb(model: nn.Module, train_loader, optimizer, epochs, test_loader, sav
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+
+            
         eps = 1e-10
         epoch_mean_loss = epoch_total_loss / epoch_total_samples + eps
         epoch_mean_bound_loss = epoch_total_bound_loss / epoch_total_samples + eps
@@ -352,8 +356,17 @@ def train_tb(model: nn.Module, train_loader, optimizer, epochs, test_loader, sav
         print(
             f'epoch: {epoch}, train: {epoch_mean_loss}, eval: {eval_loss}, violation: {epoch_mean_bound_loss}, pinnl_1: {epoch_mean_PINN_loss}, pinnl_2: {epoch_mean_PINN2_loss}')
         loss_datas[epoch] = [epoch_mean_loss, epoch_mean_bound_loss, epoch_mean_PINN_loss, epoch_mean_PINN2_loss, eval_loss]
-
+        if epoch % 20 == 0 and epoch > 200 and save:
+            if use_log_model:
+                torch.save(model.state_dict(),
+                       f'forward_models/{parent_path}/{phase_type}/{str_loss[loss_mode]}_log_model/epoch_{epoch}.pth')
+            else:
+                torch.save(model.state_dict(),
+                       f'forward_models/{parent_path}/{phase_type}/{str_loss[loss_mode]}/epoch_{epoch}.pth')
+            ...
         scheduler.step(eval_loss)
+
+
     writer.close()
     np.save(f'plot_data/{parent_path}_{phase_type}_{str_loss[loss_mode]}.npy', loss_datas)
     return model, optimizer
@@ -392,13 +405,15 @@ if __name__ == '__main__':
     print(device)
     model = Simple_NN(num_features=2).to(device)
 
-    phase_type = 'hg'
+    phase_type = 'iso'
     use_log_model = True
 
     # dataset = RTE_Dataset(path=f'data/forward_fine_data/set_finer.npz',
     #                       extrapath=f'data/forward_fine_data/set_finer_extra.npz',
     #                       phase_type=phase_type,  use_log_model=use_log_model)
     # dataset = RTE_Dataset(path=f'data/forward_unif_data/{phase_type}_10000.npz', phase_type=phase_type, use_log_model=use_log_model)
+
+
     dataset = RTE_Dataset(path=f'data/forward_fine_data/{phase_type}_1000_unif.npz', phase_type=phase_type, use_log_model=use_log_model)
     generator1 = torch.Generator().manual_seed(42)
     train_ratio = 0.8
@@ -411,5 +426,5 @@ if __name__ == '__main__':
 
 
     train_tb(model, train_loader, optimizer, 400,
-          test_loader, save=False, loss_mode=2,
-          phase_type=phase_type, parent_path='model_Resnet_unif_4', use_log_model=use_log_model)
+          test_loader, save=True, loss_mode=1,
+          phase_type=phase_type, parent_path='model_Resnet_unif_5', use_log_model=use_log_model)

@@ -6,7 +6,7 @@ import time
 import matplotlib.pylab as pylab
 from matplotlib.lines import Line2D
 
-from RTE_code.PythonCode.colormaps import parula
+from colormaps import parula
 
 # This file is used to plot the figures needed in the paper.
 
@@ -31,9 +31,7 @@ def T_R_Heatmap(axes, phase_type='iso'):
     model = Simple_NN(num_features=2)
     # model.load_state_dict(torch.load('model_2/rayleigh/WithPINN/epoch_1940.pth'))
 
-    # model.load_state_dict(torch.load('forward_models/model_Resnet_2/iso/WithBound_log_model/epoch_380.pth'))
-    # model.load_state_dict(torch.load(f'forward_models/model_Resnet_2/{phase_type}/WithBound_log_model/epoch_380.pth'))
-    model.load_state_dict(torch.load(f'forward_models/model_Resnet_unif_4/iso/WithBound_log_model/epoch_380.pth'))
+    model.load_state_dict(torch.load(f'forward_models/epoch_380_.pth'))
 
     T_heatmap = np.zeros([num_omega := 100, num_xmax := 100])
     R_heatmap = np.zeros([num_omega, num_xmax])
@@ -91,7 +89,6 @@ def T_R_versus_xmax(ax, use_log_model=False):
     # model.load_state_dict(torch.load('forward_models/model_Resnet/iso/WithBound_log_model/epoch_380.pth'))
     # model.load_state_dict(torch.load('forward_models/model_Resnet/iso/SimpleNN_log_model/epoch_380.pth'))
     model.load_state_dict(torch.load('forward_models/model_Resnet_2/iso/WithBound_log_model/epoch_380.pth'))
-    # model2.load_state_dict(torch.load('forward_models/model_Resnet_2/hg/WithBound_log_model/epoch_340.pth'))
 
     xmaxs = torch.logspace(np.log10(1e-3), np.log10(1e3), 100)
 
@@ -177,10 +174,9 @@ def T_R_versus_xmax_2(ax, use_log_model=False):
     # model = ANN_Bigger()
     model = Simple_NN(num_features=2)
     model2 = Simple_NN(num_features=2)
-    # model.load_state_dict(torch.load('forward_models/model_ANN_Bigger/hg/SimpleNN_log_model/epoch_100.pth'))
-    # model.load_state_dict(torch.load('forward_models/model_Resnet/iso/WithBound_log_model/epoch_380.pth'))
-    model.load_state_dict(torch.load('forward_models/model_Resnet/iso/SimpleNN_log_model/epoch_380.pth'))
-    model2.load_state_dict(torch.load('forward_models/model_Resnet_2/hg/WithBound_log_model/epoch_340.pth'))
+  
+    model.load_state_dict(torch.load('forward_models\epoch_380_.pth'))
+    model2.load_state_dict(torch.load('forward_models\model_Resnet_unif_5\hg\WithBound_log_model\epoch_380.pth'))
 
     xmaxs = torch.logspace(np.log10(1e-3), np.log10(1e3), 100)
 
@@ -261,12 +257,12 @@ def T_R_versus_xmax_2(ax, use_log_model=False):
     m2 = Line2D([0], [0], color='k', linestyle='-', lw=2)
     m3 = Line2D([0], [0], color='k', marker='o', markersize=10,
                        linestyle='None', fillstyle='none', markeredgewidth=2)
-    legned1 = ax.legend([m1, m2, m3], ['RTE $T_{Total}$', 'RTE $T_{Diffuse}$', 'ML'], loc='center left', fontsize=16)
+    # legned1 = ax.legend([m1, m2, m3], ['RTE $T_{Total}$', 'RTE $T_{Diffuse}$', 'ML'], loc='center left', fontsize=16)
 
     m4 = Line2D([0], [0], color='tab:blue', linestyle='-', lw=2)
     m5 = Line2D([0], [0], color='tab:orange', linestyle='-', lw=2)
-    legend2 = ax.legend([m4, m5], ['Iso, w=0.5', 'HG w=0.95'], loc='upper right', fontsize=16)
-    ax.add_artist(legned1)
+    # legend2 = ax.legend([m4, m5], ['Iso, w=0.5', 'HG w=0.95'], loc='upper right', fontsize=16)
+    # ax.add_artist(legned1)
 
     # plt.semilogx(xmaxs, R, label='R')
     # ax.legend()
@@ -276,7 +272,7 @@ def T_versus_wl(ax):
     from PartitalNN import PartialNN
     partial_model = PartialNN()
     partial_model.load_state_dict(
-        torch.load('models/PartialNN/log_xmax_model_fine1/epoch_300.pth'))
+        torch.load('models\partial_inverse.pth'))
     aero = Aerogel_Sample(thickness_mm=5.26, density=293, optical_mean_r_nm=3.50, wavelength_nm=10, m0=1 - 2j)
     wavelst_nm = np.linspace(200, 1000, 100)
     rte = RTE(1, 1, 0.9, 5.26, 21, 21, 'hg', 0.0)
@@ -329,79 +325,13 @@ def T_versus_wl(ax):
     m2 = Line2D([0], [0], color='k', linestyle='-', lw=2)
     m3 = Line2D([0], [0], color='k', marker='o', markersize=10,
                        linestyle='None', fillstyle='none', markeredgewidth=2)
-    ax.legend([m1, m2, m3], ['RTE $T_{Total}$', 'RTE $T_{Diffuse}$', 'ML'], loc='center right', fontsize=16)
+    # ax.legend([m1, m2, m3], ['RTE $T_{Total}$', 'RTE $T_{Diffuse}$', 'ML'], loc='center right', fontsize=16)
     # plt.xlabel('Wavelength (nm)')
     # plt.ylabel('T')
     # plt.title('T ~ Wavelength for Existing Sample', fontsize=16)
     # plt.show()
 
 
-def show_fwd_eff(ax):
-    import numpy as np
-
-    # Data from the table
-    num = np.array([1, 5, 31, 177, 1000])
-    time1 = np.array([335, 878, 5874, 36942, 204460])
-    time2 = np.array([217, 1164, 6139, 34787, 196914])
-    time3 = np.array([312, 1105, 6007, 35472, 198102])
-
-    # Calculate the mean and standard deviation
-    mean_time_1 = np.mean([time1, time2, time3], axis=0)
-    std_time_1 = np.std([time1, time2, time3], axis=0)
-
-    error_2sigma_1 = 2 * std_time_1
-    ax.semilogy(num, mean_time_1, label='RTE', lw=2, color='tab:blue')
-    ax.fill_between(num, mean_time_1 - error_2sigma_1, mean_time_1 + error_2sigma_1, alpha=0.2, color='tab:blue')
-
-    # Updated data including the new entries
-    num_ = np.array([10, 27, 77, 215, 599, 1668, 4641, 12915, 35938, 100000])
-    time1_ = np.array(
-        [5.389, 1.963, 3.971, 4.873, 6.387, 10.609, 23.367, 59.332, 140.545, 431.299])
-    time2_ = np.array(
-        [5.291, 2.175, 2.744, 4.942, 6.811, 10.43, 23.579, 54.62, 140.253, 408.365])
-    time3_ = np.array(
-        [5.864, 3.62, 3.098, 4.094, 6.727, 10.893, 23.278, 54.607, 138.951, 397.432])
-
-    mean_time_1 = np.mean([time1_, time2_, time3_], axis=0)
-    std_time_1 = np.std([time1_, time2_, time3_], axis=0)
-    error_2sigma_1 = 2 * std_time_1
-    ax.semilogy(num_, mean_time_1, label='ML CPU', lw=2, color='tab:orange')
-
-    # Plot the error boundary using fill_between
-    ax.fill_between(num_, mean_time_1 - error_2sigma_1, mean_time_1 + error_2sigma_1,
-                    color='tab:orange', alpha=0.2)
-
-    # Labeling and legend
-
-    num = np.array([10, 27, 77, 215, 599, 1668, 4641, 12915, 35938, 100000])
-    time1 = np.array([0.07, 4.499, 0.236, 0.204, 0.263, 3.121, 1.415, 6.494, 12.988, 33.699])
-    time2 = np.array([0.073, 4.464, 0.195, 0.193, 0.264, 1.855, 1.400, 6.824, 12.867, 33.957])
-    time3 = np.array([0.074, 3.187, 0.298, 0.196, 0.264, 3.568, 1.403, 6.552, 10.087, 30.634])
-
-    # Calculate the mean and standard deviation for each row
-    mean_time = np.mean([time1, time2, time3], axis=0)
-    std_time = np.std([time1, time2, time3], axis=0)
-
-    # Calculate the 2-sigma error (2 * standard deviation)
-    error_2sigma = 2 * std_time
-
-    # Plot the mean line
-    ax.plot(num, mean_time, label='ML GPU', lw=2, color='tab:green')
-
-    # Plot the error boundary using fill_between
-    ax.fill_between(num, mean_time - error_2sigma, mean_time + error_2sigma,
-                    color='tab:green', alpha=0.2)
-    # plt.scatter(780, 1000)
-    # plt.scatter(7800, 10000)
-    # Add labels and legend
-    # plt.xlabel('Workload Size')
-    # plt.ylabel('Time (ms)')
-    # plt.title('Computational Efficiency of the Forward Model', fontsize=16)
-    ax.set_xscale('log')
-    ax.legend()
-
-    # Display the plot
-    # plt.show()p
 
 
 # def set1():
@@ -524,12 +454,13 @@ def xmax_versus_T(ax):
 
     ax.semilogy(Ts_ML, xmaxs_from_ML, '.', label='ML  Optical Depth', ms=20,
                 color='#4a90e2', markerfacecolor='none', markeredgecolor='tab:orange')
-    ax.legend()
+    # ax.legend()
 def inverse_efficiency(ax):
-    opt_whole_height = 450 * 1e3
-    opt_partial_height = 320 * 1e3
-    ml_whole_height = 10
-    minor_opt_height = 232  # Part of the third bar (stacked)
+    data = np.load('benchmark_inverse_results_full.npy', allow_pickle=True).item()
+    opt_whole_height = data['nm_mat_mean']
+    opt_partial_height = data['ml_opt_mean']
+    ml_whole_height = data['ml_mat_mean']
+    minor_opt_height = data['nm_opt_mean']
 
     # Bar labels
     labels = ['Opt Micro', 'ML Micro', 'Opt Optical', 'ML Optical']
@@ -543,59 +474,66 @@ def inverse_efficiency(ax):
     # Create the figure and axis
 
     # Plot the bars
-    ax.bar(x[0], opt_whole_height, width, label='Opt Micro', color='tab:blue')
-    ax.bar(x[1], minor_opt_height + ml_whole_height, width, label='ML Micro', color='#ff6c5f')
-    ax.bar(x[2], opt_partial_height, width, label='Opt Optical ', color='#ffc168')
-    ax.bar(x[3], ml_whole_height, width, label='ML Optical ', color='#2dde98')
+    ax.bar(x[0], opt_whole_height, width, label='Opt Micro', color="#f3c212")
+    ax.bar(x[1], opt_partial_height, width, label='Opt Optical ', color='#2dde98')
+    ax.bar(x[2], minor_opt_height + ml_whole_height, width, label='ML Micro', color='tab:blue')
+    ax.bar(x[3], ml_whole_height, width, label='ML Optical ', color='#ff6c5f')
 
     # Add labels, title, and legend
     # change scale of y to log
     ax.set_yscale('log')
+    ax.set_ylim(top=1e5)
     ax.set_xticks(x)
-    ax.set_xticklabels(labels)
-    # ax.set_ylabel('Time (ms)')
-    # ax.set_title('Efficiency of the Inverse Model', fontsize=16)
-    # ax.legend(fontsize=12)
+    ax.set_yticklabels([])
+    ax.set_xticklabels([])
 
-    # Show the plot
-    # plt.show()
-
-# def set2():
-#     fig = plt.figure()
-#     gs = GridSpec(1, 100, figure=fig)
-#     r = 50
-#     ax1 = fig.add_subplot(gs[0, :r])
-#     ax2 = fig.add_subplot(gs[0, r + 10:100])
-#     betat_heatmap(ax1, num=300, keep_log=False)
-#     xmax_versus_T(ax2)
-#     # plt.tight_layout()
-#     plt.show()
 
 
 def show_forward_eff_2(ax):
     # data = np.load('plot_data/forward_eff_cpu.npy')
-    data_gpu = np.load('plot_data/forward_eff_cuda_1.npy')[1:]
-    data_cpu = np.load('plot_data/forward_eff_cpu_1.npy')[1:]
-    work_load = np.logspace(1, 5, 30)[1:]
-    mean_cpu, std_cpu = np.mean(data_cpu, axis=1), np.std(data_cpu, axis=1)
-    mean_gpu, std_gpu = np.mean(data_gpu, axis=1), np.std(data_gpu, axis=1)
-    error_2sigma_cpu = std_cpu
-    error_2sigma_gpu = std_gpu
-    ax.semilogy(work_load, mean_cpu, label='CPU', lw=2, color='tab:orange')
+    # data_gpu = np.load('plot_data/forward_eff_cuda_1.npy')[1:]
+    # data_cpu = np.load('plot_data/forward_eff_cpu_1.npy')[1:]
+    # work_load = np.logspace(1, 5, 30)[1:]
+    # mean_cpu, std_cpu = np.mean(data_cpu, axis=1), np.std(data_cpu, axis=1)
+    # mean_gpu, std_gpu = np.mean(data_gpu, axis=1), np.std(data_gpu, axis=1)
+    # error_2sigma_cpu = std_cpu
+    # error_2sigma_gpu = std_gpu
+    # data_rte = np.load('benchmark_forward_results_with_std.npy', allow_pickle=True).item()
+    # work_load_rte = np.array(data_rte['sizes'])
+    # mean_rte_1 = np.array(data_rte['rte_times'])
+    # error_2sigma_rte_1 = np.array(data_rte['rte_std'])
+
+    data_rte = np.load('benchmark_forward_results_with_std_rte.npy', allow_pickle=True).item()
+    work_load_rte = np.array(data_rte['sizes'])
+    mean_rte_1 = np.array(data_rte['rte_times'])
+    error_2sigma_rte_1 = np.array(data_rte['rte_std'])
+
+    data_ML = np.load('benchmark_forward_results_with_std_ML.npy', allow_pickle=True).item()
+    work_load = np.array(data_ML['sizes'])
+    mean_cpu = np.array(data_ML['cpu_times'])
+    error_2sigma_cpu = np.array(data_ML['cpu_std'])
+    mean_gpu = np.array(data_ML['gpu_times'])
+    error_2sigma_gpu = np.array(data_ML['gpu_std'])
+
+
+    ax.semilogy(work_load, mean_cpu, '.-', label='CPU', lw=2, color='tab:orange')
     ax.fill_between(work_load, mean_cpu - error_2sigma_cpu, mean_cpu + error_2sigma_cpu, alpha=0.2, color='tab:orange')
-    ax.semilogy(work_load, mean_gpu, label='GPU', lw=2, color='tab:green')
+
+    ax.semilogy(work_load, mean_gpu, '.-', label='GPU', lw=2, color='tab:green')
     ax.fill_between(work_load, mean_gpu - error_2sigma_gpu, mean_gpu + error_2sigma_gpu, alpha=0.2, color='tab:green')
-    ax.set_xscale('log')
-    data_rte_1 = np.load('plot_data/forward_eff_rte_2.npy')[:10]
-    work_load_rte = np.logspace(1, 3.5, 10)
-    mean_rte_1, std_rte_1 = np.mean(data_rte_1, axis=1), np.std(data_rte_1, axis=1)
-    error_2sigma_rte_1 = std_rte_1
-    ax.semilogy(work_load_rte, mean_rte_1, label='RTE', lw=2, color='tab:blue')
+
+    ax.semilogy(work_load_rte, mean_rte_1, '.-', label='RTE', lw=2, color='tab:blue')
     ax.fill_between(work_load_rte, mean_rte_1 - error_2sigma_rte_1, mean_rte_1 + error_2sigma_rte_1, alpha=0.2, color='tab:blue')
+    ax.set_xscale('log')
+    print(work_load[3:6])
+    print(mean_rte_1[3:6])
+    print(mean_gpu[3:6])
 
+    # clear ticks
+    ax.set_yticklabels([])
+    ax.set_xticklabels([])
 
-
-    plt.legend()
+    # plt.legend()
     # plt.show()
 
 
@@ -630,7 +568,7 @@ def real_spectrum_fitting(axes):
             m2 = Line2D([0], [0], color='tab:orange', linestyle='--', lw=2)
             m3 = Line2D([0], [0], color='k', marker='o', markersize=10,
                         linestyle='None', fillstyle='none', markeredgewidth=2)
-            legned1 = axes[i_ax].legend([m1, m2, m3], ['Target $T_{Total}$', 'Target $T_{Diffuse}$', 'ML'], loc='center', fontsize=16)
+            # legned1 = axes[i_ax].legend([m1, m2, m3], ['Target $T_{Total}$', 'Target $T_{Diffuse}$', 'ML'], loc='center', fontsize=16)
             # axes[i].legend(fontsize=16)
         axes[i_ax].set_yticks(np.linspace(0, 1, 6))
         # if i > 0:
@@ -657,8 +595,8 @@ def artificial_spectrum_fitting(axes):
         # axes[i].set_ylabel('T')
         # axes[i].set_title(f'Sep_wl: {wl_sep} nm', fontsize=16, loc='left')
         if i == 0:
-            axes[i].legend(fontsize=16)
-
+            # axes[i].legend(fontsize=16)
+            pass
         # if i > 0:
         #     axes[i].set_yticklabels([])
 
@@ -745,7 +683,11 @@ params = {'legend.fontsize': 16,
           'ytick.labelsize': 'x-large',
 }
 pylab.rcParams.update(params)
-plt.rcParams['savefig.directory'] = r'D:\summerintern\Paper\pic2'
+plt.rcParams['savefig.directory'] = r'C:\summerintern\Paper\pic2'
 # fwd_set()
 # bwd_set1()
 # T_R_Heatmap()
+fig, ax = plt.subplots()
+# show_forward_eff_2(ax)
+inverse_efficiency(ax)
+plt.show()

@@ -12,7 +12,7 @@ import os
 import numpy as np
 from tqdm import tqdm
 from torch.utils.data import Dataset, DataLoader, random_split
-from temp import Loss_Tracker
+# from temp import Loss_Tracker
 from NN import Simple_NN
 """
 Since the original NN has boundary limits, we could just train another model to predict on the boundary
