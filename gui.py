@@ -247,7 +247,7 @@ with tab2:
             st.info("Using Vectorized ML Inference...")
             # phase_type = 'hg' 
             net_spec = Simple_NN(num_features=2).to(device)
-            net_spec.load_state_dict(torch.load(f'forward_models/model_Resnet_unif_5/iso/WithPINN_log_model/epoch_380.pth', weights_only=True))
+            net_spec.load_state_dict(torch.load(f'forward_models/model_Resnet_unif_5/iso/WithPINN_log_model/epoch_380.pth', weights_only=True, map_location=device))
             net_spec.eval()
  
             input_tensor = torch.stack([
