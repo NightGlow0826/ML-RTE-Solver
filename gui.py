@@ -106,8 +106,7 @@ with tab1:
     
     # Inputs
     num_points = st.number_input("Number of Points", min_value=10, max_value=1000, value=100, step=10)
-    # 注意：我们将 xmaxs 存入 session state 或在绘图时重新生成。
-    # 为了保证绘图时 x轴数据一致，这里我们每次重新生成 xmaxs，但绘图数据使用存好的 y轴数据
+  
     xmaxs = torch.logspace(np.log10(1e-3), np.log10(1e3), num_points)
     
     albedo_plot = st.slider("Albedo (0-1)", min_value=0.0, max_value=1.0, value=0.4, step=0.01, key="albedo_plot")
@@ -129,7 +128,6 @@ with tab1:
     
     my_bar = st.progress(0)
 
-    # --- Plot 计算逻辑 ---
     if clicked_plot_conv:
         T_list = []
         # R_list = []
@@ -141,7 +139,6 @@ with tab1:
             T_list.append(T)
             # R_list.append(R)
         
-        # 存储结果和对应的 xmaxs (防止用户改了 num_points 后绘图报错)
         st.session_state.t1_plot_conv = {
             "x": xmaxs.cpu().numpy(),
             "T": np.array(T_list)
@@ -149,7 +146,6 @@ with tab1:
         my_bar.empty()
 
     if clicked_plot_ml:
-        # 使用上面加载好的 net (确保路径正确)
         input_tensor = torch.stack([torch.log(xmaxs), omegas], dim=1).to(device)
         with torch.no_grad():
             output = net(input_tensor).cpu().numpy()
@@ -160,10 +156,8 @@ with tab1:
             "T": T_list
         }
 
-    # --- Plot 展示逻辑 ---
     import matplotlib.pyplot as plt
     
-    # 检查是否有数据需要绘制
     if st.session_state.t1_plot_conv is not None:
         data = st.session_state.t1_plot_conv
         fig, ax = plt.subplots()
