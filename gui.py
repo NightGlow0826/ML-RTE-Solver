@@ -54,7 +54,7 @@ with tab1:
     )
 
     net = Simple_NN(num_features=2).to(device)
-    forward_path = r'forward_models\model_Resnet_unif_5\iso\WithPINN_log_model\epoch_380.pth'
+    forward_path = 'forward_models/model_Resnet_unif_5/iso/WithPINN_log_model/epoch_380.pth'
 
     try:
         net.load_state_dict(torch.load(forward_path, map_location=device, weights_only=True))
@@ -247,7 +247,7 @@ with tab2:
             st.info("Using Vectorized ML Inference...")
             # phase_type = 'hg' 
             net_spec = Simple_NN(num_features=2).to(device)
-            net_spec.load_state_dict(torch.load(f'forward_models\model_Resnet_unif_5\iso\WithPINN_log_model\epoch_380.pth', weights_only=True))
+            net_spec.load_state_dict(torch.load(f'forward_models/model_Resnet_unif_5/iso/WithPINN_log_model/epoch_380.pth', weights_only=True))
             net_spec.eval()
  
             input_tensor = torch.stack([
@@ -388,7 +388,7 @@ with tab3:
 
                 from PartitalNN import PartialNN
                 inv_model = PartialNN().to(device)
-                inv_model.load_state_dict(torch.load('models/partial_inverse.pth', map_location=device))
+                inv_model.load_state_dict(torch.load(r'models/partial_inverse.pth', map_location=device))
                 inv_model.eval()
                 target_T_tensor = torch.tensor(gt_T, dtype=torch.float32).reshape(-1, 1).to(device)
                 t_start = time.time()
@@ -520,7 +520,7 @@ with tab3:
                 
                 from PartitalNN import PartialNN
                 inv_model = PartialNN().to(device)
-                inv_model.load_state_dict(torch.load('models/partial_inverse.pth', map_location=device))
+                inv_model.load_state_dict(torch.load(r'models/partial_inverse.pth', map_location=device))
                 inv_model.eval()
                 
                 target_T_tensor = torch.tensor(target_T_sigmoid, dtype=torch.float32).reshape(-1, 1).to(device)
