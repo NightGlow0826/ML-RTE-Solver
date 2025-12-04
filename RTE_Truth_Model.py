@@ -19,7 +19,7 @@ from typing import Literal
 import torch
 from tqdm import tqdm
 
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 
 
 # import scipy as sp
