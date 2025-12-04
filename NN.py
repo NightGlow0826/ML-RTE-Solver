@@ -332,9 +332,9 @@ def train_tb(model: nn.Module, train_loader, optimizer, epochs, test_loader, sav
             elif loss_mode == 1:
                 loss = loss_sample + 10 * loss_bound
             elif loss_mode == 2:
-                loss = loss_sample + 0.5 * loss_bound + 0.5 * loss_PINN
+                loss = loss_sample + 0.5 * loss_bound + 50 * loss_PINN
             elif loss_mode == 3:
-                loss = loss_sample + 0.5 * loss_bound + 0.5 * loss_PINN + 0.1 * loss_PINN_2
+                loss = loss_sample + 0.5 * loss_bound + 50 * loss_PINN + 0.1 * loss_PINN_2
             else:
                 raise ValueError(f'Unknown loss mode {loss_mode}')
             # if   swith_opti = 1
@@ -426,5 +426,5 @@ if __name__ == '__main__':
 
 
     train_tb(model, train_loader, optimizer, 400,
-          test_loader, save=True, loss_mode=1,
+          test_loader, save=True, loss_mode=2,
           phase_type=phase_type, parent_path='model_Resnet_unif_5', use_log_model=use_log_model)

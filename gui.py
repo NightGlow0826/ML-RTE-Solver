@@ -25,13 +25,11 @@ tab1, tab2, tab3 = st.tabs(["Forward", 'Forward-Material Spectra', 'Inverse Spec
 
 ##################### Part 1: Forward Model #####################
 with tab1:
-    # --- 初始化 Session State (用于存储计算结果，防止刷新丢失) ---
-    # 单点计算结果
+
     if "t1_single_conv" not in st.session_state:
         st.session_state.t1_single_conv = None
     if "t1_single_ml" not in st.session_state:
         st.session_state.t1_single_ml = None
-    # 绘图数据
     if "t1_plot_conv" not in st.session_state:
         st.session_state.t1_plot_conv = None
     if "t1_plot_ml" not in st.session_state:
@@ -55,9 +53,8 @@ with tab1:
         help="Phase functions: iso - isotropic, raileigh - Rayleigh scattering, hg - Henyey-Greenstein"
     )
 
-    # 加载模型
     net = Simple_NN(num_features=2).to(device)
-    forward_path = r'C:\summerintern\RTE_main_code\forward_models\model_Resnet_unif_5\iso\WithBound_log_model\epoch_280.pth'
+    forward_path = r'forward_models\model_Resnet_unif_5\iso\WithPINN_log_model\epoch_380.pth'
 
     try:
         net.load_state_dict(torch.load(forward_path, map_location=device, weights_only=True))
@@ -65,16 +62,14 @@ with tab1:
     except FileNotFoundError:
         st.error(f"Model file not found at: {forward_path}")
 
-    # 按钮布局
     col_btn1, col_btn2 = st.columns(2)
     with col_btn1:
         click_single_conv = st.button("Compute with Conventional Solver", key="btn_single_conv")
     with col_btn2:
         click_single_ml = st.button("Compute with ML", key="btn_single_ml")
 
-    # --- 计算逻辑 (只更新数据) ---
     if click_single_conv:
-        rte_obj = RTE(albedo, 1, 0.99, optical_depth, 21, 21, phase)
+        rte_obj = RTE(albedo, 1, 0.99, optical_depth, 21, 21, phase, g=0.5)
         rte_obj.build()
         T, R = rte_obj.hemi_props()
         st.session_state.t1_single_conv = (T, R)
@@ -86,7 +81,6 @@ with tab1:
         T, R = output[0], output[1]
         st.session_state.t1_single_ml = (T, R)
 
-    # --- 展示逻辑 (始终显示) ---
     c_res1, c_res2 = st.columns(2)
     with c_res1:
         if st.session_state.t1_single_conv:
@@ -252,9 +246,9 @@ with tab2:
 
         if "ML" in solver_mode:
             st.info("Using Vectorized ML Inference...")
-            phase_type = 'hg' 
+            # phase_type = 'hg' 
             net_spec = Simple_NN(num_features=2).to(device)
-            net_spec.load_state_dict(torch.load(f'forward_models/epoch_380_.pth', weights_only=True))
+            net_spec.load_state_dict(torch.load(f'forward_models\model_Resnet_unif_5\iso\WithPINN_log_model\epoch_380.pth', weights_only=True))
             net_spec.eval()
  
             input_tensor = torch.stack([
