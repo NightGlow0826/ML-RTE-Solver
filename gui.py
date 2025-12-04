@@ -351,7 +351,6 @@ with tab3:
         waves = np.linspace(w_1, w_2, num_points_fit)
 
         def get_mie_params(rho, r, wl_nm, thick_mm):
-            """计算 Mie 参数"""
             try:
                 n_val = f_n(wl_nm * 1e-9)
             except:
