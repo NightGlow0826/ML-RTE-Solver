@@ -85,12 +85,11 @@ with tab1:
     with c_res1:
         if st.session_state.t1_single_conv:
             T, R = st.session_state.t1_single_conv
-            st.info(f"Conv Result:\nTransmittance: {T:.4f}, Reflectance: {R:.4f}")
+            st.info(f"Conv Result:\nTransmittance: {T:.2f}, Reflectance: {R:.2f}")
     with c_res2:
         if st.session_state.t1_single_ml:
             T, R = st.session_state.t1_single_ml
-            st.success(f"ML Result:\nTransmittance: {T:.4f}, Reflectance: {R:.4f}")
-
+            st.success(f"ML Result:\nTransmittance: {T:.2f}, Reflectance: {R:.2f}")
     st.markdown("---")
 
     # ==========================================
