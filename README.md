@@ -9,22 +9,21 @@ This repository contains the official implementation of the paper **"A Machine L
 ## Overview
 
 The Radiative Transfer Equation (RTE) is a fundamental tool for describing light-matter interactions but is notoriously computationally expensive to solve using conventional numerical methods. This project introduces a Machine Learning based framework that combines Residual Networks (ResNet) and Physics-Informed Neural Networks (PINNs) to solve both **forward** and **inverse** RTE problems.
-**To launch the demo locally, run: ```text streamlit run gui.py``` . Alternatively, you can use the hosted version here: https://nightglow0826-ml-rte-solver-gui-ycpfhy.streamlit.app/ to use it online**.
+**To launch the demo locally, run: ```streamlit run gui.py``` . Alternatively, you can use the hosted version here: https://nightglow0826-ml-rte-solver-gui-ycpfhy.streamlit.app/ to use it online**.
 
 **Key Capabilities:**
-* **Forward Problem:** Predicts transmittance and reflectance spectra from optical properties (optical depth $\tau$, albedo $\omega$) with high accuracy.
+* **Forward Problem:** Predicts transmittance and reflectance spectra from optical properties (optical depth $\tau$, albedo $\omega$).
 * **Inverse Problem - Optical Propertis:** Retrieves single-particle level optical properties from spectral responses.
 * **Incerse Problem - Material Design:** Implements a post-inverse process using the Nelder-Mead simplex method to map optical properties to material parameters (e.g., particle radius, mass density), enabling inverse material design.
-* **Performance:** Achieves a **$10^5 \times$ speedup** for forward/inverse problems and a **$10^2 \times$ speedup** for finding material properties compared to conventional RTE solvers.
+* **Performance:** Achieves a **$10^5 \times$** speedup for forward& finding optical properties and a **$10^2 \times$** speedup for finding material properties compared to conventional RTE solvers.
 
 ## Repository Structure
 
 * **`RTE_Truth_Model.py`**: The conventional C-RTE solver (Ground Truth). Implements the discrete ordinate method (Gauss-Legendre quadrature) and finite difference scheme to solve the RTE.
-* **`NN.py`**: Implementation of the Forward ML-RTE solver. Contains the `Simple_NN` (ResNet) architecture and the training loop with PINN loss functions (boundary loss, energy conservation, and analytical constraints).
+* **`NN.py`**: Implementation of the Forward ML-RTE solver. Contains the `ResNet' architecture and the training loop with PINN loss functions (boundary loss, energy conservation, and analytical constraints).
 * **`InverseNN.py`**: Implementation of the Inverse ML-RTE solver. Maps spectral data (Transmittance, Reflectance) back to optical properties.
 * **`gen_data.py`**: Scripts for data generation. Uses parallel computing to generate large datasets of optical property pairs and their corresponding spectral responses using the C-RTE solver.
 * **`spectrum.py`**: The main application script for **Inverse Material Design**. It integrates Mie theory (using `pymiescatt` or internal logic) with the ML solver to optimize material properties (density, radius) for target spectra, such as those for silica aerogels.
-* **`temp.py`**: Utility functions for computing scattering phase functions (Isotropic, Rayleigh, Henyey-Greenstein).
 
 ## Installation
 
