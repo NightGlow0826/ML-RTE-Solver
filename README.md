@@ -2,8 +2,19 @@
 
 This repository contains the official implementation of the paper **"A Machine Learning Approach to Solving Radiative Transfer Equation in Participating Media"**.
 
-## Contributors
+## Authors
 
+- Yuyang Gan¹  
+- Yang Zhong²  
+- Xuanjie Wang²˒³  
+- Lenan Zhang¹,*
+
+Affiliations  
+¹ Sibley School of Mechanical and Aerospace Engineering, Cornell University, NY 14853, USA  
+² Department of Mechanical Engineering, Massachusetts Institute of Technology, Cambridge, MA 02139, USA  
+³ Department of Mechanical Engineering and Mechanics, Lehigh University, Bethlehem, PA 18015, USA
+
+*Corresponding author: lzhang@cornell.edu (L. Zhang)
 
 
 ## Overview
